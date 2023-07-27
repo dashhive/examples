@@ -1,0 +1,22 @@
+{
+  "name": "@dashincubator/maya",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "jojobyte <byte@jojo.io> (https://jojo.io/)",
+  "license": "MIT",
+  "dependencies": {
+    "@dashincubator/base58check": "1.4.1",
+    "@dashincubator/secp256k1": "1.7.1-5",
+    "dashhd": "3.3.0",
+    "dashkeys": "1.1.0",
+    "dashphrase": "1.4.0",
+    "dashsight": "^1.6.0",
+    "dashtx": "dashhive/DashTx.js#strict-tx"
+  }
+}
