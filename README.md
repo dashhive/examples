@@ -16,4 +16,6 @@ Examples to demonstrate usage of Tools built by the [Dash Incubator](https://git
   - [x] Feed input value into OP_RETURN
   - [x] On create, preview Transaction Hex
   - [x] Broadcast via Server or Client to Dash Network
-- [ ] Deploy to Vercel
+- [x] Deploy to Vercel
+  - https://github.com/dashhive/examples/tree/master/apps/next-app-router
+    - https://dash-incubator-next-app-router-memo.vercel.app/
