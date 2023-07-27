@@ -3,7 +3,7 @@
 import {
   transferDash,
   instantSend,
-} from '@dashincubator/maya'
+} from '@dashincubator/memo'
 
 export async function broadcastServerMemo(data) {
   let txLink = ''

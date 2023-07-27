@@ -1,7 +1,7 @@
 import {
   transferDash,
   createDashTransaction,
-} from '@dashincubator/maya'
+} from '@dashincubator/memo'
 
 import Memo from '@/components/memo'
 

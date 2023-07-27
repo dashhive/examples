@@ -6,7 +6,7 @@ import Broadcast from './broadcast';
 
 import {
   transferDash,
-} from '@dashincubator/maya'
+} from '@dashincubator/memo'
 
 export default function Memo() {
   const dialogRef = useRef(null);

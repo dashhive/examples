@@ -6,7 +6,7 @@ import { broadcastServerMemo } from '@/app/actions'
 
 import {
   instantSend,
-} from '@dashincubator/maya'
+} from '@dashincubator/memo'
 
 const Broadcast = forwardRef(({ txHex }, ref) => {
   let txLink = ''

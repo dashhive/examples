@@ -1,5 +1,5 @@
 {
-  "name": "next-app-router",
+  "name": "@dashincubator/next-app-router-memo",
   "version": "0.1.0",
   "private": true,
   "scripts": {
