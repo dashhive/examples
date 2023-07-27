@@ -12,7 +12,8 @@ Examples to demonstrate usage of Tools built by the [Dash Incubator](https://git
 - [@dashincubator/base58check](https://github.com/dashhive/base58check.js)
 
 ### Todo
-- [ ] UI with input for memo
-  - [ ] Feed input value into OP_RETURN
-  - [ ] On submit, broadcast to Dash Network
+- [x] UI with input for memo
+  - [x] Feed input value into OP_RETURN
+  - [x] On create, preview Transaction Hex
+  - [x] Broadcast via Server or Client to Dash Network
 - [ ] Deploy to Vercel
