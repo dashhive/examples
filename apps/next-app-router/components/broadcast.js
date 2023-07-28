@@ -8,8 +8,16 @@ import {
   instantSend,
 } from '@dashincubator/memo'
 
-const Broadcast = forwardRef(({ txHex }, ref) => {
-  let txLink = ''
+function getTxLink(confirmation) {
+  if (!confirmation?.txid) {
+    return ''
+  }
+
+  return `https://live.blockcypher.com/dash/tx/${confirmation?.txid}/`
+}
+
+const Broadcast = forwardRef(({ txHex, setTxBroadcast, }, ref) => {
+  let confirmation = {}
 
   async function handleSubmit(event) {
     let formData = new FormData(
@@ -20,12 +28,20 @@ const Broadcast = forwardRef(({ txHex }, ref) => {
 
     if (fd.intent === 'browser') {
       event.preventDefault()
-      txLink = await broadcastClientMemo(fd)
+      confirmation = await broadcastClientMemo(fd)
     } else {
-      txLink = await broadcastServerMemo(formData)
+      confirmation = await broadcastServerMemo(formData)
     }
 
-    ref.current.close(txLink)
+    setTxBroadcast(confirmation)
+
+    console.log(
+      'handleSubmit txLink',
+      fd.intent,
+      getTxLink(confirmation),
+    )
+
+    ref.current.close(getTxLink(confirmation))
   }
 
   async function broadcastClientMemo(data) {
@@ -45,12 +61,12 @@ const Broadcast = forwardRef(({ txHex }, ref) => {
         confirmation,
       },
     )
-    txLink = `https://live.blockcypher.com/dash/tx/${confirmation?.txid}/`
-    console.log(
-      txLink
-    )
+    // txLink = `https://live.blockcypher.com/dash/tx/${confirmation?.txid}/`
+    // console.log(
+    //   txLink
+    // )
 
-    return txLink
+    return confirmation
   }
 
   useEffect(() => {
@@ -61,6 +77,15 @@ const Broadcast = forwardRef(({ txHex }, ref) => {
           // console.log('BACKDROP CLICK')
           ref.current.close('cancel')
         }
+      }
+    )
+    ref?.current?.addEventListener(
+      'close',
+      event => {
+        console.log('DIALOG CLOSE', {
+          event,
+          returnValue: ref?.current?.returnValue,
+        })
       }
     )
   }, [])
@@ -75,7 +100,7 @@ const Broadcast = forwardRef(({ txHex }, ref) => {
         name='broadcast-form'
         method='dialog'
         onSubmit={handleSubmit}
-        className='w-full bg-slate-800 shadow py-5 px-6 text-right'
+        className='w-full h-2/3 bg-slate-800 shadow py-5 px-6 text-right'
       >
         <label className='block mb-4 w-full'>
           <span className='block text-sm text-left font-medium text-slate-400 mb-1'>Raw Transaction</span>
@@ -84,20 +109,10 @@ const Broadcast = forwardRef(({ txHex }, ref) => {
             placeholder='Transaction Hex'
             className={inputStyles}
             value={txHex}
-            rows={12}
+            rows={15}
             readOnly
           />
         </label>
-        <p className="pb-4 text-left">Inspect at <a
-            className="text-blue-500"
-            target='_blank'
-            href={
-              `https://live.blockcypher.com/dash/decodetx/?t=${
-                txHex
-              }`
-            }
-          >https://live.blockcypher.com/dash/decodetx/</a>
-        </p>
 
         <button
           className='bg-sky-500 hover:bg-sky-700 px-5 py-2 mr-4 text-sm leading-5 rounded-md font-semibold text-white'
@@ -115,6 +130,17 @@ const Broadcast = forwardRef(({ txHex }, ref) => {
         >
           Browser Broadcast
         </button>
+
+        <p className="pb-4 text-left">Inspect at <a
+            className="text-blue-500"
+            target='_blank'
+            href={
+              `https://live.blockcypher.com/dash/decodetx/?t=${
+                txHex
+              }`
+            }
+          >https://live.blockcypher.com/dash/decodetx/</a>
+        </p>
       </form>
     </dialog>
   );

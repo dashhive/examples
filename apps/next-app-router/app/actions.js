@@ -26,13 +26,13 @@ export async function broadcastServerMemo(data) {
     txLink
   )
 
-  return txLink
+  return confirmation
 }
 
 export async function createServerMemo(data, log = () => {}) {
-  const addr = data.get('addr') || 'XjLxscqf1Z2heBDWXVi2YmACmU53LhtyGA'
-  const amount = data.get('amount') || 0.00001
-  const memo = data.get('memo') || '🧧'
+  const addr = data.get('addr') //|| 'XjLxscqf1Z2heBDWXVi2YmACmU53LhtyGA'
+  const amount = data.get('amount') //|| 0.00001
+  const memo = data.get('memo') //|| '🧧'
 
   const txInfo = await transferDash(addr, amount, memo)
 
