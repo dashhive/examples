@@ -18,8 +18,8 @@ Examples to demonstrate usage of Tools built by the [Dash Incubator](https://git
   - [x] Broadcast via Server or Client to Dash Network
   - [x] Fix unresponsive styles
   - [x] Fix input text color
-  - [ ] Re-Arrange Memo Form to default to memo only
-    - [ ] hide address & amount by default and make more obvious that they are optional
+  - [x] Re-Arrange Memo Form to default to memo only
+    - [x] hide address & amount by default and make more obvious that they are optional
   - [ ] Show QR/Address to funding wallet to allow easily refilling
 - [x] Deploy to Vercel
   - https://github.com/dashhive/examples/tree/master/apps/next-app-router
