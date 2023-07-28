@@ -1,4 +1,7 @@
 // "use strict";
+
+// Based on https://gist.github.com/coolaj86/43a2a9d1007b6df2dd63eb9d1a5c1733
+
 import DashPhrase from 'dashphrase'
 import DashHd from 'dashhd'
 import DashKeys from 'dashkeys'
@@ -30,49 +33,36 @@ export async function transferDash(
   memo = "",
   log = () => {},
 ) {
-  log();
+  let txInfoSigned
 
-  let txInfoSigned = await createDashTransaction(address, amount, memo);
-  log(`[DEBUG] signed tx info:`);
-  log(txInfoSigned);
-  log();
+  try {
+    txInfoSigned = await createDashTransaction(
+      address,
+      amount,
+      memo,
+      log,
+    );
+    log(`[DEBUG] signed tx info:`);
+    log(txInfoSigned);
+    log();
 
-  let txHex = txInfoSigned.transaction.toString();
-  log(`[DEBUG] raw transaction:`);
-  log(txHex);
-  log();
+    let txHex = txInfoSigned.transaction.toString();
+    log(`[DEBUG] raw transaction:`);
+    log(txHex);
+    log();
 
-  log(`[DEBUG] inspect at https://live.blockcypher.com/dash/decodetx/`);
-  log();
+    log(`[DEBUG] inspect at https://live.blockcypher.com/dash/decodetx/`);
+    log();
+  } catch (err) {
+    console.warn(err)
+  }
 
-  // UNCOMMENT BELOW TO SEND FOR REAL
-
-  // broadcast the transaction
-  // let confirmation = await instantSend(txHex);
-  // log(`[DEBUG] transaction confirmation:`, confirmation);
-
-  // return confirmation;
   return txInfoSigned;
 };
 
-/**
- * @param {String} address - a normal Base58Check-encoded PubKeyHash
- * @param {Number} amount - Dash, in decimal form (not sats)
- * @param {String} memo - the maya command string
- * @returns {Promise<String>} txHex
- */
-export async function createDashTransaction(
-  address,
-  amount,
-  memo = "",
+export async function getPrimaryAddr(
   log = () => {},
 ) {
-  // encode / decode input arguments to appropriate form for transaction
-  let pubKeyHashBytes = await DashKeys.addrToPkh(address);
-  let pubKeyHash = DashKeys.utils.bytesToHex(pubKeyHashBytes);
-  let satoshis = DashTx.toSats(amount);
-  let memoHex = DashTx.utils.strToHex(memo);
-
   // get the private key
   let salt = "";
   let seedBytes = await DashPhrase.toSeed(walletPhrase, salt);
@@ -87,6 +77,52 @@ export async function createDashTransaction(
   let primaryPkh = DashKeys.utils.bytesToHex(primaryPkhBytes);
   log(`[DEBUG] primaryAddress:`, primaryAddress, primaryPkh);
 
+  return {
+    addressKey,
+    primaryAddress,
+    primaryPkhBytes,
+    primaryPkh,
+  }
+}
+
+/**
+ * @param {String} address - a normal Base58Check-encoded PubKeyHash
+ * @param {Number} amount - Dash, in decimal form (not sats)
+ * @param {String} memo - the maya command string
+ * @returns {Promise<String>} txHex
+ */
+export async function createDashTransaction(
+  address = '',
+  amount = 0,
+  memo = '',
+  log = () => {},
+) {
+  let pubKeyHashBytes;
+  let pubKeyHash;
+
+  let {
+    addressKey,
+    primaryAddress,
+    primaryPkh,
+  } = await getPrimaryAddr(log)
+
+  // encode / decode input arguments to appropriate form for transaction
+  if (address) {
+    pubKeyHashBytes = await DashKeys.addrToPkh(address);
+    pubKeyHash = DashKeys.utils.bytesToHex(pubKeyHashBytes);
+  }
+
+  let satoshis
+  let memoHex
+
+  try {
+    satoshis = DashTx.toSats(amount);
+    memoHex = DashTx.utils.strToHex(memo);
+    log(`[DEBUG] satoshis:`, satoshis);
+  } catch (err) {
+    console.warn(err)
+  }
+
   // check the address balance
   let coins = await getUtxos(primaryAddress);
   log(`[DEBUG] coins:`, coins);
@@ -94,18 +130,29 @@ export async function createDashTransaction(
   // setup outputs
   /** @type {Array<DashTx.TxOutput>} */
   let outputs = [];
-  let recipient = {
-    pubKeyHash,
-    satoshis,
-  };
-  outputs.push(recipient);
+  if (pubKeyHash && satoshis > 0) {
+    let recipient = {
+      pubKeyHash,
+      satoshis,
+    };
+
+    outputs.push(recipient);
+  }
+
   if (memo) {
     outputs.push({ memo: memoHex, satoshis: 0 });
   }
 
   // create the transaction
   let changeOutput = { pubKeyHash: primaryPkh, satoshis: 0 };
-  let txInfo = await DashTx.legacyCreateTx(coins, outputs, changeOutput);
+  let txInfo
+
+  try {
+    txInfo = await DashTx.legacyCreateTx(coins, outputs, changeOutput);
+  } catch (err) {
+    console.warn(err)
+  }
+
   log(`[DEBUG] transaction:`);
   log(txInfo);
   log();
@@ -122,8 +169,12 @@ export async function createDashTransaction(
       return addressKey.privateKey;
     },
   };
-  let txInfoSigned = await dashTx.hashAndSignAll(txInfo, signOpts);
-
+  let txInfoSigned
+  try {
+    txInfoSigned = await dashTx.hashAndSignAll(txInfo, signOpts);
+  } catch (err) {
+    console.warn(err)
+  }
   return txInfoSigned;
 };
 
@@ -131,7 +182,7 @@ export async function createDashTransaction(
  * @param {String} address
  * @returns {Promise<Array<TxInput>>}
  */
-async function getUtxos(address) {
+export async function getUtxos(address) {
   let url = `${INSIGHT_BASE_URL}/addr/${address}/utxo`;
   let resp = await fetch(url);
   let insightUtxos = await readJson(resp, url);
