@@ -16,7 +16,7 @@
     "dashhd": "3.3.0",
     "dashkeys": "1.1.0",
     "dashphrase": "1.4.0",
-    "dashsight": "^1.6.0",
-    "dashtx": "dashhive/DashTx.js#strict-tx"
+    "dashsight": "1.6.0",
+    "dashtx": "0.13.1"
   }
 }
