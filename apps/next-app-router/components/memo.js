@@ -32,6 +32,7 @@ export default function Memo() {
   const [txBroadcast, setTxBroadcast] = useState({})
   const [txInfo, setTxInfo] = useState('')
   const [txHex, setTxHex] = useState('')
+  const [walletAddr, setWalletAddr] = useState('')
   const [walletSum, setWalletSum] = useState(0)
 
   useEffect(() => {
@@ -41,6 +42,8 @@ export default function Memo() {
         primaryAddress,
         // primaryPkh,
       } = await getPrimaryAddr(console.log)
+
+      setWalletAddr(primaryAddress)
 
       let coins = await getUtxos(primaryAddress);
       let sum = DashTx.sum(coins)
@@ -123,11 +126,16 @@ export default function Memo() {
           <h1 className="text-xl pb-4 text-left">
             Broadcast a Memo to the Dash Network
           </h1>
-          <h2 className="text-slate-500 font-bold text-right text-xl pb-4 text-left">
-            Wallet Balance:
+          <h2 className="text-slate-500 font-bold text-right pb-4 text-left">
+            <div className="text-xl text-right">Wallet Balance:</div>
             <div className='text-slate-200'>
               {walletSum}
             </div>
+            {/* <a
+              target='_blank'
+              href={`dash:${walletAddr}`}
+              className="text-blue-500"
+            >{walletAddr}</a> */}
           </h2>
         </div>
         <label className='block mb-4 w-full'>
@@ -209,6 +217,15 @@ export default function Memo() {
             }
           >https://live.blockcypher.com/dash/decodetx/</a>
         </p> */}
+        <p className="text-center pt-10">
+          Send funds to this Dash wallet at
+          <br/>
+          <a
+            target='_blank'
+            href={`dash:${walletAddr}`}
+            className="text-blue-500"
+          >{walletAddr}</a>
+        </p>
       </form>
       <div>
         {
