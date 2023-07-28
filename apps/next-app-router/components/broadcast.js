@@ -69,7 +69,7 @@ const Broadcast = forwardRef(({ txHex }, ref) => {
     <dialog
       ref={ref}
       id='broadcast-memo'
-      className='w-1/3 mx-auto backdrop:bg-[#456d] text-white'
+      className='max-w-full w-screen md:min-h-auto md:w-2/3 md:mt-10 mx-auto backdrop:bg-[#456d] text-white'
     >
       <form
         name='broadcast-form'
@@ -88,7 +88,7 @@ const Broadcast = forwardRef(({ txHex }, ref) => {
             readOnly
           />
         </label>
-        <p className="pb-4">Inspect at <a
+        <p className="pb-4 text-left">Inspect at <a
             className="text-blue-500"
             target='_blank'
             href={
