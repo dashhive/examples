@@ -38,9 +38,7 @@ export default function Memo() {
   useEffect(() => {
     async function getWalletBalance() {
       let {
-        // addressKey,
         primaryAddress,
-        // primaryPkh,
       } = await getPrimaryAddr(console.log)
 
       setWalletAddr(primaryAddress)
@@ -61,7 +59,6 @@ export default function Memo() {
   }, [formData])
 
   useEffect(() => {
-    // getTxLink(txBroadcast);
     console.log('txBroadcast change', txBroadcast)
     setFormData(initialFormData)
   }, [txBroadcast])
@@ -117,10 +114,19 @@ export default function Memo() {
 
   return (
     <>
+      {
+        txBroadcast?.txid &&
+        <div className='max-w-full md:w-2/3 bg-neutral-800 p-4'>
+          <p>
+            Memo Broadcasted to Dash Blockchain.<br/>
+            Transaction ID: <a target='_blank' href={getTxLink(txBroadcast)} className="text-blue-500 break-words">{txBroadcast.txid}</a>
+          </p>
+        </div>
+      }
       <form
         name='memo-form'
         onSubmit={handleSubmit}
-        className='flex flex-col w-full min-h-screen md:min-h-full md:w-1/2 mx-auto bg-slate-800 shadow py-5 px-6'
+        className='flex flex-col flex-auto md:flex-none w-full md:w-2/3 mx-auto bg-slate-800 shadow py-5 px-6'
       >
         <div className='flex flex-row justify-between'>
           <h1 className="text-xl pb-4 text-left">
@@ -140,19 +146,19 @@ export default function Memo() {
         </div>
         <label className='block mb-4 w-full'>
           <span className='block text-sm text-left font-medium text-slate-400 mb-1'>Memo</span>
-          <input
-            name='memo'
-            placeholder='Enter the message to broadcast'
-            className={inputStyles}
-            value={formData.memo}
-            onChange={e => {
-              setFormData({
-                ...formData,
-                memo: e.target.value
-              });
-            }}
-          />
         </label>
+        <input
+          name='memo'
+          placeholder='Enter the message to broadcast'
+          className={inputStyles}
+          value={formData.memo}
+          onChange={e => {
+            setFormData({
+              ...formData,
+              memo: e.target.value
+            });
+          }}
+        />
         <details>
           <summary className='cursor-pointer pb-5'>Optional Fields</summary>
 
@@ -191,7 +197,7 @@ export default function Memo() {
         </details>
 
         <button
-          className='w-1/3 self-end bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-md font-semibold text-white'
+          className='w-2/3 md:w-1/3 self-end bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-md font-semibold text-white'
           type='submit'
         >
           Create Transaction
@@ -227,17 +233,9 @@ export default function Memo() {
           >{walletAddr}</a>
         </p>
       </form>
-      <div>
-        {
-        txBroadcast?.txid && <p>
-          Memo Broadcasted to Dash Blockchain.<br/>
-          Transaction ID: <a target='_blank' href={getTxLink(txBroadcast)} className="text-blue-500">{txBroadcast.txid}</a>
-        </p>
-        }
-      </div>
       <Broadcast ref={dialogRef} txHex={txHex} setTxBroadcast={setTxBroadcast} />
     </>
   );
 }
 
-let inputStyles = 'px-3 py-2 bg-slate-900 border shadow-sm border-gray-700 placeholder-slate-400 text-slate-300 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1 invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500 disabled:shadow-none'
+let inputStyles = 'px-3 py-2 bg-slate-900 border shadow-sm border-gray-700 placeholder-slate-400 text-slate-300 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1 invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500 disabled:shadow-none mb-4'
